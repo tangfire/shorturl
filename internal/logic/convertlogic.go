@@ -33,7 +33,6 @@ func NewConvertLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ConvertLo
 func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertResponse, err error) {
 	// 1. 校验输入的数据
 	// 1.1 数据不能为空
-
 	// 1.2 输入的长链接必须是一个能请求通的网址
 	if ok := connect.Get(req.LongUrl); !ok {
 		return nil, errors.New("无效的链接")
