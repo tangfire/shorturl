@@ -1,7 +1,7 @@
 syntax = "v1"
 
 type ConvertRequest {
-	LongUrl string `path:"longUrl" validate:"required"`
+	LongUrl string `json:"longUrl" validate:"required"`
 }
 
 type ConvertResponse {
@@ -9,7 +9,7 @@ type ConvertResponse {
 }
 
 type ShowRequest {
-	ShortUrl string `json:"shortUrl"`
+	ShortUrl string `json:"shortUrl" validate:"required"`
 }
 
 type ShowResponse {
