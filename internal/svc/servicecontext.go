@@ -4,11 +4,13 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"shorturl/internal/config"
 	"shorturl/model"
+	"shorturl/sequence"
 )
 
 type ServiceContext struct {
 	Config        config.Config
 	ShortUrlModel model.ShortUrlMapModel // short_url_map
+	Sequence      *sequence.MySQL
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -16,5 +18,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:        c,
 		ShortUrlModel: model.NewShortUrlMapModel(conn),
+		Sequence:      sequence.NewMySQL(c.Sequence.DSN), // sequence
 	}
 }

@@ -22,6 +22,7 @@ func Get(url string) bool {
 			Key:   "merr",
 			Value: err.Error(),
 		})
+		return false
 	}
 	err = resp.Body.Close()
 	if err != nil {

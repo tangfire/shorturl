@@ -5,14 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"shorturl/internal/svc"
 	"shorturl/internal/types"
 	"shorturl/pkg/connect"
 	"shorturl/pkg/md5"
 	"shorturl/pkg/merr"
-
-	"github.com/zeromicro/go-zero/core/logx"
+	"shorturl/pkg/urltool"
 )
 
 type ConvertLogic struct {
@@ -52,8 +52,30 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 
 	// 1.4 输入的不能是一个短链接(避免循环转链)
 	// 输入的是一个完整的url
-
-	// 2. 取号
+	basePath, err := urltool.GetBasePath(req.LongUrl)
+	if err != nil {
+		logx.Errorw("urltool.GetBasePath failed", logx.LogField{
+			Key:   "lurl",
+			Value: req.LongUrl,
+		}, merr.NormalErr(err))
+		return nil, err
+	}
+	_, err = l.svcCtx.ShortUrlModel.FindOneBySurl(l.ctx, sql.NullString{String: basePath, Valid: true})
+	if !errors.Is(err, sqlx.ErrNotFound) {
+		if err == nil {
+			return nil, fmt.Errorf("该链接已经是短链接了")
+		}
+		logx.Errorw("ShortUrlModel.FindOneBySurl failed", merr.NormalErr(err))
+		return nil, err
+	}
+	// 2. 取号 基于MySQL实现的发号器
+	// 每来一个转链请求,我们就使用REPLACE
+	seq, err := l.svcCtx.Sequence.Next()
+	if err != nil {
+		logx.Errorw("Sequence.Next failed", merr.NormalErr(err))
+		return nil, err
+	}
+	fmt.Println(seq)
 
 	// 3. 号码转短链
 
