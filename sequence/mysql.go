@@ -17,7 +17,7 @@ type MySQL struct {
 	conn sqlx.SqlConn
 }
 
-func NewMySQL(dsn string) *MySQL {
+func NewMySQL(dsn string) Sequence {
 	return &MySQL{
 		conn: sqlx.NewMysql(dsn),
 	}
